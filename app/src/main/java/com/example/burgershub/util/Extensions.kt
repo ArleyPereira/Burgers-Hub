@@ -15,11 +15,15 @@ inline fun <reified T> HttpException.getErrorResponse(): T? {
     }
 }
 
-fun Float.formattedValue(): String? {
-    val nf: NumberFormat = DecimalFormat(
-        "#,##0.00", DecimalFormatSymbols(
-            Locale("pt", "BR")
-        )
-    )
-    return nf.format(this)
+fun Float?.formattedValue(removeSymbol: Boolean = false): String {
+    val moneyFormatter = NumberFormat.getCurrencyInstance(Locale("pt", "BR"))
+    moneyFormatter.currency = Currency.getInstance("BRL")
+
+    val value = if (this == null) {
+        moneyFormatter.format(0f)
+    } else {
+        moneyFormatter.format(this)
+    }
+
+    return if (removeSymbol) value.replace("R\$ ", "") else value
 }
